@@ -93,7 +93,7 @@ public class UserController {
 
     /**
      * 删除用户
-     * @param id 删除用户的ID
+     * @param deleteRequest 删除用户封装类
      * @param request HTTP请求
      * @return 是否删除成功
      */
