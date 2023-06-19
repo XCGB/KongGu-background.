@@ -1,0 +1,41 @@
+# encoding: utf-8
+spring:
+  application:
+    name: KongGu
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+    url: jdbc:mysql://localhost:3306/kong_gu
+  session:
+    timeout: 86400
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+#mybatis-plus default automatically convert camelCase and underscores
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+  global-config:
+    db-config:
+      logic-delete-field: isDelete # Entity field name for global tombstone
+      logic-delete-value: 1 # Logical removed value (default 1)
+      logic-not-delete-value: 0 # Logical non-removed values (default 0)
+
+#阿里云OSS
+aliyun:
+  oss:
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    accessKeyId: LTAI5tDMUHjG7VDE9okchXDV
+    accessKeySecret: XqPA2aOGajMVV93Ln7La0HGyfs2cOy
+    bucketName: teaching-project-web-tlias
+
+
