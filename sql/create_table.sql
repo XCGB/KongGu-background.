@@ -42,8 +42,11 @@ create table post
     commentNum    int      default 0                 not null comment '评论数',
     isDelete      tinyint  default 0                 not null comment '逻辑删除 ',
     createTime    datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-    updateTime    datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间'
+    updateTime    datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint post_users_id_fk
+        foreign key (userId) references users (id)
 ) comment '帖子表';
+
 
 -- 帖子点赞表
 create table post_thumb

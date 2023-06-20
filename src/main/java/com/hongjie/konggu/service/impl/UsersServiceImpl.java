@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hongjie.konggu.common.ErrorCode;
 import com.hongjie.konggu.exception.BusinessException;
 import com.hongjie.konggu.model.domain.Users;
+import com.hongjie.konggu.model.domain.request.UserAppendRequest;
 import com.hongjie.konggu.model.domain.request.UserLoginRequest;
 import com.hongjie.konggu.model.domain.request.UserRegisterRequest;
+import com.hongjie.konggu.model.domain.request.UserUpdateRequest;
 import com.hongjie.konggu.service.UsersService;
 import com.hongjie.konggu.mapper.UsersMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -120,6 +122,13 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
     }
 
     @Override
+    public Boolean userLogout(HttpServletRequest request) {
+        // 移除登录态
+        request.getSession().removeAttribute(USER_LOGIN_STATE);
+        return true;
+    }
+
+    @Override
     public Long userRegister(UserRegisterRequest registerRequest) {
         String userAccount = registerRequest.getUserAccount();
         String username = registerRequest.getUsername();
@@ -175,6 +184,78 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
 //        List<Users> list = userList.stream().map(user -> getSafetyUser(user)).collect(Collectors.toList());
 
         return list;
+    }
+
+    @Override
+    public Long appendUser(UserAppendRequest userAppendRequest) {
+        String userAccount = userAppendRequest.getUserAccount();
+
+        // 1. 校验合法性
+        if (StringUtils.isAnyBlank(userAccount)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+        }
+        validateUserAccountSpecialCharacters(userAccount);
+        validateUserAccountDuplicate(userAccount);
+
+        // 2. 设置默认密码（12345678）
+        String userPassword = "12345678";
+        String avatarUrl = userAppendRequest.getAvatar();
+        String username = userAppendRequest.getUsername();
+
+        String encryptPassword = encryptPassword(userPassword);
+
+        // 3. 插入数据
+        Users user = new Users();
+        user.setUsername(username);
+        user.setUserAccount(userAccount);
+        user.setUserPassword(encryptPassword);
+        user.setAvatar(avatarUrl);
+        boolean result = this.save(user);
+
+        // 4. 返回插入成功的用户ID
+        if (!result) {
+            throw new BusinessException(ErrorCode.INSERT_ERROR, "无法插入数据");
+        }
+        return user.getId();
+    }
+
+    @Override
+    public Boolean updateUser(Long id, UserUpdateRequest updateUser) {
+        Users user = usersMapper.selectById(id);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户为空");
+        }
+
+        // 更新用户属性
+        if (updateUser.getNickname() != null) {
+            user.setNickname(updateUser.getNickname());
+        }
+        if (updateUser.getAvatar() != null) {
+            user.setAvatar(updateUser.getAvatar());
+        }
+        if (updateUser.getGender() != null) {
+            user.setGender(updateUser.getGender());
+        }
+        if (updateUser.getGrade() != null) {
+            user.setGrade(updateUser.getGrade());
+        }
+        if (updateUser.getCollege() != null) {
+            user.setCollege(updateUser.getCollege());
+        }
+        if (updateUser.getProfession() != null) {
+            user.setProfession(updateUser.getProfession());
+        }
+        if (updateUser.getHobby() != null) {
+            user.setHobby(updateUser.getHobby());
+        }
+
+        // 保存更新后的用户信息
+        int rows = usersMapper.updateById(user);
+        if (rows > 0) {
+            return true;
+        } else {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户为空");
+        }
     }
 
 

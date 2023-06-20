@@ -2,8 +2,10 @@ package com.hongjie.konggu.service;
 
 import com.hongjie.konggu.model.domain.Users;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hongjie.konggu.model.domain.request.UserAppendRequest;
 import com.hongjie.konggu.model.domain.request.UserLoginRequest;
 import com.hongjie.konggu.model.domain.request.UserRegisterRequest;
+import com.hongjie.konggu.model.domain.request.UserUpdateRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -22,6 +24,13 @@ public interface UsersService extends IService<Users> {
      * @return 脱敏后的用户信息
      */
     Users userLogin(UserLoginRequest loginRequest, HttpServletRequest request);
+
+    /**
+     * 用户登出
+     * @param request
+     * @return
+     */
+    Boolean userLogout(HttpServletRequest request);
 
     /**
      * 用户注册
@@ -44,6 +53,20 @@ public interface UsersService extends IService<Users> {
      */
     List<Users> searchUsers(String username);
 
+    /**
+     * 管理员（新增用户）
+     * @param userAppendRequest 新增用户类
+     * @return 新增用户ID
+     */
+    Long appendUser(UserAppendRequest userAppendRequest);
+
+    /**
+     * 更新当前用户信息
+     * @param id 用户ID
+     * @param updateUser 更新信息
+     * @return 是否更新成功
+     */
+    Boolean updateUser(Long id, UserUpdateRequest updateUser);
 
     /**
      * 用户脱敏

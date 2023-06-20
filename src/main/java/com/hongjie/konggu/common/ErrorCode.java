@@ -12,7 +12,9 @@ public enum ErrorCode {
     NO_AUTH(40101,"无权限",""),
     NO_FOUND_ERROR(40404,"请求数据不存在",""),
     SYSTEM_ERROR(50000,"系统内部异常",""),
-            ;
+    INSERT_ERROR(50001,"数据插入异常","");
+
+
     /**
      * 状态码
      */
