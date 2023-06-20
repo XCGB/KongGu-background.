@@ -30,12 +30,4 @@ mybatis-plus:
       logic-delete-value: 1 # Logical removed value (default 1)
       logic-not-delete-value: 0 # Logical non-removed values (default 0)
 
-#阿里云OSS
-aliyun:
-  oss:
-    endpoint: https://oss-cn-beijing.aliyuncs.com
-    accessKeyId: LTAI5tDMUHjG7VDE9okchXDV
-    accessKeySecret: XqPA2aOGajMVV93Ln7La0HGyfs2cOy
-    bucketName: teaching-project-web-tlias
-
 
