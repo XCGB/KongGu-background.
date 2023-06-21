@@ -123,6 +123,9 @@ public class UserController {
         Long result = usersService.appendUser(userAppendRequest);
         return ResultUtil.success(result);
     }
+
+
+
     /**
      * 删除用户
      * @param deleteRequest 删除用户封装类
@@ -133,13 +136,13 @@ public class UserController {
     public BaseResponse<Boolean> deleteUser(@RequestBody UserDeleteRequest deleteRequest, HttpServletRequest request){
         // 检查是否有删除权限
         if (!isAdmin(request)){
-            throw new RuntimeException("权限不足");
+            throw new BusinessException(ErrorCode.NO_AUTH);
         }
 
         // 检查参数是否为空
         Long id = deleteRequest.getId();
         if(id <= 0){
-            throw new RuntimeException("参数错误");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         boolean result = usersService.removeById(id);
         return ResultUtil.success(result);
@@ -154,9 +157,14 @@ public class UserController {
      */
     @PutMapping("/update/{id}")
     public BaseResponse<Boolean> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest updateUser, HttpServletRequest request) {
-        // 1. 获取用户鉴权信息
-        if (!isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH);
+        // 1. 获取用户登录态
+        if (request == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 获取用户登录态
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        if (userObj == null){
+            return ResultUtil.error(ErrorCode.PARAMS_ERROR);
         }
         Boolean result = usersService.updateUser(id, updateUser);
         return ResultUtil.success(result);

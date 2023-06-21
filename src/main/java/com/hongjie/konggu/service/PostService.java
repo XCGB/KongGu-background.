@@ -21,6 +21,10 @@ public interface PostService extends IService<Post> {
      */
     Long addPost(Post post, HttpServletRequest request);
 
+    /**
+     * 获取通过审核的帖子
+     * @return 通过审核的帖子列表
+     */
     List<Post> listByUser();
 
     /**
