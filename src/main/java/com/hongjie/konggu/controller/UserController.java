@@ -88,7 +88,8 @@ public class UserController {
         // 向下转型
         Users currentObj = (Users) userObj;
         // 根据ID查询数据库
-        Users safetyUser = usersService.getCurrentUser(currentObj);
+        Users safetyUser = usersService.getLoginUser(request);
+
         return ResultUtil.success(safetyUser);
     }
 
@@ -102,7 +103,7 @@ public class UserController {
     public BaseResponse<List<Users>> searchUsers(@RequestParam(required = false) String username,
                                                  HttpServletRequest request) {
         // 1. 获取用户鉴权信息
-        if (!isAdmin(request)) {
+        if (!usersService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
         List<Users> list = usersService.searchUsers(username);
@@ -135,7 +136,7 @@ public class UserController {
     @PostMapping("/delete")
     public BaseResponse<Boolean> deleteUser(@RequestBody UserDeleteRequest deleteRequest, HttpServletRequest request){
         // 检查是否有删除权限
-        if (!isAdmin(request)){
+        if (!usersService.isAdmin(request)){
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
 
@@ -170,14 +171,5 @@ public class UserController {
         return ResultUtil.success(result);
     }
 
-    /**
-     * 获取用户鉴权
-     * @param request HTTP请求
-     * @return 是否有权限
-     */
-    private boolean isAdmin(HttpServletRequest request) {
-        Object userRole = request.getSession().getAttribute(USER_LOGIN_STATE);
-        Users user = (Users) userRole;
-        return user != null && user.getUserRole() == ADMIN_ROLE;
-    }
+
 }

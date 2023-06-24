@@ -85,6 +85,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         user.setNickname(nickname);
         user.setUserAccount(userAccount);
         user.setUserPassword(encryptPassword);
+        user.setAvatar(AVATAR_URL);
         return user;
     }
 
@@ -167,6 +168,23 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         Long userId = currentObj.getId();
         Users user = getById(userId);
         return getSafetyUser(user);
+    }
+
+    @Override
+    public Users getLoginUser(HttpServletRequest request) {
+        // 先判断是否已登录
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        Users currentUser = (Users) userObj;
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        // 从数据库查询（追求性能的话可以注释，直接走缓存）
+        long userId = currentUser.getId();
+        currentUser = this.getById(userId);
+        if (currentUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        return getSafetyUser(currentUser);
     }
 
     @Override
@@ -256,6 +274,13 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         } else {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户为空");
         }
+    }
+
+    @Override
+    public boolean isAdmin(HttpServletRequest request) {
+        Object userRole = request.getSession().getAttribute(USER_LOGIN_STATE);
+        Users user = (Users) userRole;
+        return user != null && user.getUserRole() == ADMIN_ROLE;
     }
 
 

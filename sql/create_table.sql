@@ -59,3 +59,30 @@ create table post_thumb
     updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间'
 ) comment '帖子点赞表';
 
+-- 标签表
+create table tag
+(
+    id         bigint auto_increment comment '主键ID'
+        primary key,
+    tagName    varchar(256)                       not null comment '标签名',
+    userId     bigint                             not null comment '创建用户ID',
+    postNum    bigint   default 0                 not null comment '引用次数',
+    isDelete   int      default 0                 not null comment '逻辑删除 0-1',
+    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间'
+) comment '标签表';
+
+-- 帖子标签关联表
+create table post_tag
+(
+    id         bigint auto_increment comment '主键ID'
+        primary key,
+    postId     bigint                             not null comment '帖子ID',
+    tagId      bigint                             null comment '标签ID',
+    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint post_tag_post_id_fk
+        foreign key (postId) references post (id),
+    constraint post_tag_tag_id_fk
+        foreign key (tagId) references tag (id)
+) comment '帖子标签关联表';

@@ -10,7 +10,7 @@
             <result property="content" column="content" jdbcType="VARCHAR"/>
             <result property="reviewStatus" column="reviewStatus" jdbcType="TINYINT"/>
             <result property="reviewMessage" column="reviewMessage" jdbcType="VARCHAR"/>
-            <result property="thumNum" column="thumNum" jdbcType="INTEGER"/>
+            <result property="thumbNum" column="thumbNum" jdbcType="INTEGER"/>
             <result property="commentNum" column="commentNum" jdbcType="INTEGER"/>
             <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
@@ -19,7 +19,7 @@
 
     <sql id="Base_Column_List">
         id,userId,content,
-        reviewStatus,reviewMessage,thumNum,
+        reviewStatus,reviewMessage,thumbNum,
         commentNum,isDelete,createTime,
         updateTime
     </sql>

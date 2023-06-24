@@ -47,6 +47,13 @@ public interface UsersService extends IService<Users> {
     Users getCurrentUser(Users currentObj);
 
     /**
+     * 获取当前登录用户
+     * @param request 请求对象
+     * @return 脱敏后的用户
+     */
+    Users getLoginUser(HttpServletRequest request);
+
+    /**
      * 搜索用户信息
      * @param username 可能为空
      * @return 用户列表
@@ -69,10 +76,18 @@ public interface UsersService extends IService<Users> {
     Boolean updateUser(Long id, UserUpdateRequest updateUser);
 
     /**
+     * 获取用户鉴权
+     * @param request HTTP请求
+     * @return 是否有权限
+     */
+    boolean isAdmin(HttpServletRequest request);
+
+    /**
      * 用户脱敏
      * @param originUser 脱敏前用户
      * @return 脱敏后的用户信息（密码隐藏）
      */
     Users getSafetyUser(Users originUser);
+
 
 }

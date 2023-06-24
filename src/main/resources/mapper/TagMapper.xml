@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hongjie.konggu.mapper.TagMapper">
+
+    <resultMap id="BaseResultMap" type="com.hongjie.konggu.model.domain.Tag">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="tagName" column="tagName" jdbcType="VARCHAR"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="postNum" column="postNum" jdbcType="BIGINT"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,tagName,userId,
+        postNum,isDelete,createTime,
+        updateTime
+    </sql>
+</mapper>

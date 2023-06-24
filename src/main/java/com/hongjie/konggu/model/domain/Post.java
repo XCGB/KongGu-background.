@@ -42,7 +42,7 @@ public class Post implements Serializable {
     /**
      * 点赞数
      */
-    private Integer thumNum;
+    private Integer thumbNum;
 
     /**
      * 评论数

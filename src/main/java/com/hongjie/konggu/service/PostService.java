@@ -2,6 +2,7 @@ package com.hongjie.konggu.service;
 
 import com.hongjie.konggu.model.domain.Post;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hongjie.konggu.model.domain.request.PostAddRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -19,13 +20,20 @@ public interface PostService extends IService<Post> {
      * @param request 请求对象
      * @return 帖子ID
      */
-    Long addPost(Post post, HttpServletRequest request);
+    Long addPost(PostAddRequest post, HttpServletRequest request);
 
     /**
      * 获取通过审核的帖子
      * @return 通过审核的帖子列表
      */
     List<Post> listByUser();
+
+    /**
+     * 根据发帖用户ID搜索帖子
+     * @param userId 发帖用户ID
+     * @return 帖子列表
+     */
+    List<Post> searchPosts(Long userId);
 
     /**
      * 检查帖子是否非法，若非法则直接抛出异常

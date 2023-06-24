@@ -6,6 +6,7 @@ import com.hongjie.konggu.common.ErrorCode;
 import com.hongjie.konggu.exception.BusinessException;
 import com.hongjie.konggu.model.domain.Post;
 import com.hongjie.konggu.model.domain.Users;
+import com.hongjie.konggu.model.domain.request.PostAddRequest;
 import com.hongjie.konggu.service.PostService;
 import com.hongjie.konggu.mapper.PostMapper;
 import com.hongjie.konggu.service.UsersService;
@@ -32,6 +33,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
     private PostMapper postMapper;
     @Resource
     private UsersService usersService;
+
     /**
      * 不雅词汇数组
      */
@@ -44,24 +46,24 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
     };
 
     @Override
-    public Long addPost(Post post, HttpServletRequest request) {
-        if(post == null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-
+    public Long addPost(PostAddRequest postAddRequest, HttpServletRequest request) {
         // 1. 检查用户是否登录
         Users loginUser = (Users)request.getSession().getAttribute(USER_LOGIN_STATE);
         if(loginUser == null){
             throw new BusinessException(ErrorCode.NOT_LOGIN,"请先登录");
         }
+        // 2. 获取帖子内容和发布用户ID
+        Post post = new Post();
+        post.setContent(postAddRequest.getContent());
         post.setUserId(loginUser.getId());
-        // 2. 检查帖子是否合法
+
+        // 3. 检查帖子是否合法
         validPost(post);
 
-        // 3. 保存帖子
+        // 4. 保存帖子
         boolean saveResult = this.save(post);
 
-        // 4. 返回结果
+        // 5. 返回结果
         if(!saveResult){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"帖子信息保存失败");
         }
@@ -80,6 +82,15 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
             post.setUser(user);
             return null;
         }).collect(Collectors.toList());
+        return postList;
+    }
+
+    @Override
+    public List<Post> searchPosts(Long userId) {
+        QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("userId",userId);
+
+        List<Post> postList = list(queryWrapper);
         return postList;
     }
 

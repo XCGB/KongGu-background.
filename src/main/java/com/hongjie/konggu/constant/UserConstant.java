@@ -30,4 +30,9 @@ public interface UserConstant {
      * 昵称长度
      */
     int NICKNAME_LENGTH = 23;
+
+    /**
+     * 默认图片地址
+     */
+    String AVATAR_URL = "https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png";
 }

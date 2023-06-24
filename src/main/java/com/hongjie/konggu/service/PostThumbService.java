@@ -9,5 +9,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2023-06-17 16:32:41
 */
 public interface PostThumbService extends IService<PostThumb> {
-
+    /**
+     * 点赞/取消点赞
+     * @param userId
+     * @param postId
+     * @return
+     */
+    long doThumb(Long userId, Long postId);
 }
