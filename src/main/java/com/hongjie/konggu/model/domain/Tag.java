@@ -25,6 +25,11 @@ public class Tag implements Serializable {
     private String tagName;
 
     /**
+     * 标签颜色
+     */
+    private String tagColor;
+
+    /**
      * 创建用户ID
      */
     private Long userId;

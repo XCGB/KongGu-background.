@@ -31,6 +31,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
 
     @Resource
     PostTagService postTagService;
+    @Resource
+    private TagMapper tagMapper;
 
     @Override
     public List<Tag> getTagList(String tagName) {
@@ -64,6 +66,20 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
         }
         // 4. 返回结果
         return true;
+    }
+
+    @Override
+    public void addPostNum(Long tagId) {
+        Tag tag = tagMapper.selectById(tagId);
+        if (tag == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "标签不存在");
+        }
+        Long postNum = tag.getPostNum();
+        tag.setPostNum(++postNum);
+        boolean save = updateById(tag);
+        if (!save){
+            throw new BusinessException(ErrorCode.INSERT_ERROR);
+        }
     }
 }
 

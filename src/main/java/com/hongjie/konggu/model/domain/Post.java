@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 
 /**
@@ -67,6 +69,9 @@ public class Post implements Serializable {
 
     @TableField(exist = false)
     private Users user;
+
+    @TableField(exist = false)
+    private List<Tag> tagList;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

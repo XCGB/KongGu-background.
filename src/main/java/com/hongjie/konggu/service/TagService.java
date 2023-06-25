@@ -11,8 +11,24 @@ import java.util.List;
 * @createDate 2023-06-23 14:18:58
 */
 public interface TagService extends IService<Tag> {
+
+    /**
+     * 获取标签列表
+     * @param tagName 标签名
+     * @return
+     */
     List<Tag> getTagList(String tagName);
+
+    /**
+     * 删除标签
+     * @param tagId 标签ID
+     * @return
+     */
     boolean deleteTag(Long tagId);
 
-
+    /**
+     * 添加引用次数
+     * @param tagId 标签ID
+     */
+    void addPostNum(Long tagId);
 }

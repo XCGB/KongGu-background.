@@ -10,6 +10,7 @@ import com.hongjie.konggu.exception.BusinessException;
 import com.hongjie.konggu.model.domain.Post;
 import com.hongjie.konggu.model.domain.Tag;
 import com.hongjie.konggu.model.domain.Users;
+import com.hongjie.konggu.model.domain.request.ChangeColorRequest;
 import com.hongjie.konggu.model.domain.request.DeleteRequest;
 import com.hongjie.konggu.service.TagService;
 import com.hongjie.konggu.service.UsersService;
@@ -45,12 +46,13 @@ public class TagController {
 
     /**
      * 获取所有标签
+     *
      * @param request 请求ID
      * @return 标签列表
      */
     @GetMapping("/list")
-        public BaseResponse<List<Tag>> getTagList(@RequestParam(required = false) String tagName,
-                                            HttpServletRequest request) {
+    public BaseResponse<List<Tag>> getTagList(@RequestParam(required = false) String tagName,
+                                              HttpServletRequest request) {
         // 1. 检查请求非空
         if (request == null) {
             return ResultUtil.error(ErrorCode.PARAMS_ERROR);
@@ -59,10 +61,10 @@ public class TagController {
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         Users currentObj = (Users) userObj;
         Users user = usersService.getById(currentObj.getId());
-        if (user == null){
+        if (user == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
-        // 3. 判断是否根据用户ID搜索帖子
+        // 3. 判断是否根据标签名搜索
         List<Tag> list = tagService.getTagList(tagName);
         return ResultUtil.success(list);
     }
@@ -70,36 +72,43 @@ public class TagController {
 
     /**
      * 创建标签
-     * @param tag 标签内容
+     *
+     * @param tag     标签内容
      * @param request 请求对象
      * @return 标签ID
      */
     @PostMapping("/add")
     @AuthCheck(mustRole = 1)
-    public BaseResponse<Long> addTag(@RequestBody Tag tag, HttpServletRequest request){
-        // 2. 判断请求非空
+    public BaseResponse<Long> addTag(@RequestBody Tag tag, HttpServletRequest request) {
+        // 1. 判断请求非空
         if (tag == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         String tagName = tag.getTagName();
-        if (StringUtils.isNotBlank(tagName)) {
+        String tagColor = tag.getTagColor();
+        if (StringUtils.isAllBlank(tagName,tagColor)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
-        // TODO 优化获取当前对象的代码
+        // 2. 获取用户登录态
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         Users currentObj = (Users) userObj;
+
+        // 3. 设置标签的userId
         Users loginUser = usersService.getCurrentUser(currentObj);
         tag.setUserId(loginUser.getId());
+
         boolean result = tagService.save(tag);
         if (!result) {
             throw new BusinessException(ErrorCode.INSERT_ERROR);
         }
+
         return ResultUtil.success(tag.getId());
     }
 
     /**
      * 删除标签
+     *
      * @param deleteRequest 删除标签ID
      * @return 是否成功
      */
@@ -119,6 +128,23 @@ public class TagController {
         return ResultUtil.success(result);
     }
 
+    // 更换颜色
+    @PostMapping("/changeColor")
+    @AuthCheck(mustRole = 1)
+    public BaseResponse<Boolean> changeColor(@RequestBody ChangeColorRequest changeColorRequest){
+        if (changeColorRequest == null || changeColorRequest.getTagId() <= 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Long tagId = changeColorRequest.getTagId();
+        Tag tag = tagService.getById(tagId);
+        tag.setTagColor(changeColorRequest.getTagColor());
+        boolean b = tagService.updateById(tag);
+        if (!b){
+            return ResultUtil.error(ErrorCode.INSERT_ERROR);
+        }
+        return ResultUtil.success(true);
+
+    }
 
 
 }

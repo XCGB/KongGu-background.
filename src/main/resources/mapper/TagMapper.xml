@@ -7,6 +7,7 @@
     <resultMap id="BaseResultMap" type="com.hongjie.konggu.model.domain.Tag">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="tagName" column="tagName" jdbcType="VARCHAR"/>
+            <result property="tagColor" column="tagColor" jdbcType="VARCHAR"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>
             <result property="postNum" column="postNum" jdbcType="BIGINT"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
@@ -15,8 +16,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,tagName,userId,
-        postNum,isDelete,createTime,
-        updateTime
+        id,tagName,tagColor,
+        userId,postNum,isDelete,
+        createTime,updateTime
     </sql>
 </mapper>

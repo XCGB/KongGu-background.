@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hongjie.konggu.common.ErrorCode;
 import com.hongjie.konggu.exception.BusinessException;
 import com.hongjie.konggu.model.domain.Post;
+import com.hongjie.konggu.model.domain.Tag;
 import com.hongjie.konggu.model.domain.Users;
 import com.hongjie.konggu.model.domain.request.PostAddRequest;
 import com.hongjie.konggu.service.PostService;
 import com.hongjie.konggu.mapper.PostMapper;
+import com.hongjie.konggu.service.PostTagService;
 import com.hongjie.konggu.service.UsersService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
     private PostMapper postMapper;
     @Resource
     private UsersService usersService;
+    @Resource
+    private PostTagService postTagService;
 
     /**
      * 不雅词汇数组
@@ -79,9 +83,14 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         List<Post> postList = list(queryWrapper);
         postList.stream().map(post -> {
             Users user = usersService.getById(post.getUserId());
-            post.setUser(user);
+            Users safetyUser = usersService.getSafetyUser(user);
+            post.setUser(safetyUser);
+            Long postId = post.getId();
+            List<Tag> tagList = postTagService.searchByPostId(postId);
+            post.setTagList(tagList);
             return null;
         }).collect(Collectors.toList());
+
         return postList;
     }
 

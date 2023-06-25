@@ -65,12 +65,14 @@ create table tag
     id         bigint auto_increment comment '主键ID'
         primary key,
     tagName    varchar(256)                       not null comment '标签名',
+    tagColor   varchar(255)                       not null comment '标签颜色',
     userId     bigint                             not null comment '创建用户ID',
     postNum    bigint   default 0                 not null comment '引用次数',
     isDelete   int      default 0                 not null comment '逻辑删除 0-1',
     createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间'
 ) comment '标签表';
+
 
 -- 帖子标签关联表
 create table post_tag
