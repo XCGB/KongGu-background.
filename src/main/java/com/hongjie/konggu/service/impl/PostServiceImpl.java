@@ -7,11 +7,13 @@ import com.hongjie.konggu.exception.BusinessException;
 import com.hongjie.konggu.model.domain.Post;
 import com.hongjie.konggu.model.domain.Tag;
 import com.hongjie.konggu.model.domain.Users;
-import com.hongjie.konggu.model.domain.request.PostAddRequest;
+import com.hongjie.konggu.model.dto.UserDTO;
+import com.hongjie.konggu.model.request.PostAddRequest;
 import com.hongjie.konggu.service.PostService;
 import com.hongjie.konggu.mapper.PostMapper;
 import com.hongjie.konggu.service.PostTagService;
 import com.hongjie.konggu.service.UsersService;
+import com.hongjie.konggu.utils.UserHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.hongjie.konggu.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
 * @author WHJ
@@ -52,14 +53,16 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
     @Override
     public Long addPost(PostAddRequest postAddRequest, HttpServletRequest request) {
         // 1. 检查用户是否登录
-        Users loginUser = (Users)request.getSession().getAttribute(USER_LOGIN_STATE);
-        if(loginUser == null){
-            throw new BusinessException(ErrorCode.NOT_LOGIN,"请先登录");
+        // 1. 从线程中获取当前用户
+        UserDTO user = UserHolder.getUser();
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
+
         // 2. 获取帖子内容和发布用户ID
         Post post = new Post();
         post.setContent(postAddRequest.getContent());
-        post.setUserId(loginUser.getId());
+        post.setUserId(user.getId());
 
         // 3. 检查帖子是否合法
         validPost(post);

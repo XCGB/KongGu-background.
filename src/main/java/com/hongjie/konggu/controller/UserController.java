@@ -5,18 +5,17 @@ import com.hongjie.konggu.common.ErrorCode;
 import com.hongjie.konggu.common.ResultUtil;
 import com.hongjie.konggu.exception.BusinessException;
 import com.hongjie.konggu.model.domain.Users;
-import com.hongjie.konggu.model.domain.request.*;
+import com.hongjie.konggu.model.dto.UserDTO;
+import com.hongjie.konggu.model.request.*;
 import com.hongjie.konggu.service.UsersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import java.util.List;
-
-import static com.hongjie.konggu.constant.UserConstant.ADMIN_ROLE;
-import static com.hongjie.konggu.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * @author: WHJ
@@ -47,16 +46,17 @@ public class UserController {
     /**
      * 用户登录
      * @param loginRequest 用户登录封装类
-     * @param request 存放登录态
+     * @param session 存放登录态
      * @return 脱敏后的用户信息
      */
     @PostMapping("/login")
-    public BaseResponse<Users> userLogin(@RequestBody UserLoginRequest loginRequest, HttpServletRequest request){
+    public BaseResponse<String> userLogin(@RequestBody UserLoginRequest loginRequest, HttpSession session){
         if (loginRequest == null) {
             return null;
         }
-        Users user = usersService.userLogin(loginRequest,request);
-        return ResultUtil.success(user);
+        String token = usersService.userLogin(loginRequest,session);
+
+        return ResultUtil.success(token);
     };
 
     /**
@@ -67,10 +67,13 @@ public class UserController {
     @PostMapping("/logout")
     public BaseResponse<Boolean> userLogout(HttpServletRequest request) {
         if (request == null) {
-            return null;
+            return ResultUtil.error(ErrorCode.NULL_ERROR);
         }
         Boolean result = usersService.userLogout(request);
-        return ResultUtil.success(result);
+        if (result){
+            return ResultUtil.success(result);
+        }
+        return ResultUtil.error(ErrorCode.INSERT_ERROR);
     }
 
     /**
@@ -79,16 +82,12 @@ public class UserController {
      * @return 脱敏后用户信息
      */
     @GetMapping("/current")
-    public BaseResponse<Users> getCurrentUser(HttpServletRequest request) {
+    public BaseResponse<UserDTO> getCurrentUser(HttpServletRequest request) {
         if (request == null) {
             return ResultUtil.error(ErrorCode.PARAMS_ERROR);
         }
-        // 获取用户登录态
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
-        // 向下转型
-        Users currentObj = (Users) userObj;
-        // 根据ID查询数据库
-        Users safetyUser = usersService.getLoginUser(request);
+        // 获取当前用户登录态
+        UserDTO safetyUser = usersService.getLoginUser(request);
 
         return ResultUtil.success(safetyUser);
     }
@@ -125,8 +124,6 @@ public class UserController {
         return ResultUtil.success(result);
     }
 
-
-
     /**
      * 删除用户
      * @param deleteRequest 删除用户封装类
@@ -162,12 +159,8 @@ public class UserController {
         if (request == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        // 获取用户登录态
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
-        if (userObj == null){
-            return ResultUtil.error(ErrorCode.PARAMS_ERROR);
-        }
-        Boolean result = usersService.updateUser(id, updateUser);
+
+        Boolean result = usersService.updateUser(id, updateUser,request);
         return ResultUtil.success(result);
     }
 

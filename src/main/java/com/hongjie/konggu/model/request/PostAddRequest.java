@@ -1,4 +1,4 @@
-package com.hongjie.konggu.model.domain.request;
+package com.hongjie.konggu.model.request;
 
 import com.hongjie.konggu.model.domain.Tag;
 import lombok.Data;

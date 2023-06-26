@@ -1,19 +1,18 @@
 package com.hongjie.konggu.controller;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.hongjie.konggu.annotation.AuthCheck;
 import com.hongjie.konggu.common.BaseResponse;
 import com.hongjie.konggu.common.ErrorCode;
 import com.hongjie.konggu.common.ResultUtil;
 import com.hongjie.konggu.exception.BusinessException;
-import com.hongjie.konggu.model.domain.Post;
 import com.hongjie.konggu.model.domain.Tag;
 import com.hongjie.konggu.model.domain.Users;
-import com.hongjie.konggu.model.domain.request.ChangeColorRequest;
-import com.hongjie.konggu.model.domain.request.DeleteRequest;
+import com.hongjie.konggu.model.dto.UserDTO;
+import com.hongjie.konggu.model.request.ChangeColorRequest;
+import com.hongjie.konggu.model.request.DeleteRequest;
 import com.hongjie.konggu.service.TagService;
 import com.hongjie.konggu.service.UsersService;
+import com.hongjie.konggu.utils.UserHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static com.hongjie.konggu.constant.UserConstant.USER_LOGIN_STATE;
+import static com.hongjie.konggu.constant.UserConstant.ADMIN_ROLE;
 
 /**
  * @author: WHJ
@@ -46,25 +45,18 @@ public class TagController {
 
     /**
      * 获取所有标签
-     *
-     * @param request 请求ID
+     * @param tagName 标签名
      * @return 标签列表
      */
     @GetMapping("/list")
-    public BaseResponse<List<Tag>> getTagList(@RequestParam(required = false) String tagName,
-                                              HttpServletRequest request) {
-        // 1. 检查请求非空
-        if (request == null) {
-            return ResultUtil.error(ErrorCode.PARAMS_ERROR);
-        }
-        // 2. 检查登录态
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
-        Users currentObj = (Users) userObj;
-        Users user = usersService.getById(currentObj.getId());
+    public BaseResponse<List<Tag>> getTagList(@RequestParam(required = false) String tagName) {
+        // 1. 从线程中获取当前用户
+        UserDTO user = UserHolder.getUser();
         if (user == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
-        // 3. 判断是否根据标签名搜索
+
+        // 2. 判断是否根据标签名搜索
         List<Tag> list = tagService.getTagList(tagName);
         return ResultUtil.success(list);
     }
@@ -78,7 +70,7 @@ public class TagController {
      * @return 标签ID
      */
     @PostMapping("/add")
-    @AuthCheck(mustRole = 1)
+    @AuthCheck(mustRole = ADMIN_ROLE)
     public BaseResponse<Long> addTag(@RequestBody Tag tag, HttpServletRequest request) {
         // 1. 判断请求非空
         if (tag == null) {
@@ -91,12 +83,12 @@ public class TagController {
         }
 
         // 2. 获取用户登录态
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
-        Users currentObj = (Users) userObj;
-
-        // 3. 设置标签的userId
-        Users loginUser = usersService.getCurrentUser(currentObj);
-        tag.setUserId(loginUser.getId());
+        UserDTO user = UserHolder.getUser();
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        // 3. 获取用户ID
+        tag.setUserId(user.getId());
 
         boolean result = tagService.save(tag);
         if (!result) {
@@ -113,7 +105,7 @@ public class TagController {
      * @return 是否成功
      */
     @PostMapping("/delete")
-    @AuthCheck(mustRole = 1)
+    @AuthCheck(mustRole = ADMIN_ROLE)
     public BaseResponse<Boolean> deleteTag(@RequestBody DeleteRequest deleteRequest) {
         // 1. 判断请求是否合法
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
@@ -130,7 +122,7 @@ public class TagController {
 
     // 更换颜色
     @PostMapping("/changeColor")
-    @AuthCheck(mustRole = 1)
+    @AuthCheck(mustRole = ADMIN_ROLE)
     public BaseResponse<Boolean> changeColor(@RequestBody ChangeColorRequest changeColorRequest){
         if (changeColorRequest == null || changeColorRequest.getTagId() <= 0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);

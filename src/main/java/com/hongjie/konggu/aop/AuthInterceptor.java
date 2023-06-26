@@ -3,7 +3,7 @@ package com.hongjie.konggu.aop;
 import com.hongjie.konggu.annotation.AuthCheck;
 import com.hongjie.konggu.common.ErrorCode;
 import com.hongjie.konggu.exception.BusinessException;
-import com.hongjie.konggu.model.domain.Users;
+import com.hongjie.konggu.model.dto.UserDTO;
 import com.hongjie.konggu.service.UsersService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -43,7 +43,7 @@ public class AuthInterceptor {
         // 2. 获取当前线程中的请求的属性对象。
         RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-        Users user = userService.getLoginUser(request);
+        UserDTO user = userService.getLoginUser(request);
 
         // 3. 拥有任意权限即通过
         if (anyRole.length > 0) {

@@ -6,10 +6,6 @@ package com.hongjie.konggu.constant;
  * @description: 常量接口类
  */
 public interface UserConstant {
-    /**
-     * 用户登录态的键
-     */
-    String USER_LOGIN_STATE = "userLoginState";
 
     /**
      * 默认权限

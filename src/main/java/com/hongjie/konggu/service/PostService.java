@@ -2,7 +2,7 @@ package com.hongjie.konggu.service;
 
 import com.hongjie.konggu.model.domain.Post;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.hongjie.konggu.model.domain.request.PostAddRequest;
+import com.hongjie.konggu.model.request.PostAddRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
