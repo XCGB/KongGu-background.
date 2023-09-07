@@ -2,6 +2,7 @@ package com.hongjie.konggu;
 
 import com.hongjie.konggu.mapper.UsersMapper;
 import com.hongjie.konggu.model.domain.Users;
+import com.hongjie.konggu.service.UsersService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

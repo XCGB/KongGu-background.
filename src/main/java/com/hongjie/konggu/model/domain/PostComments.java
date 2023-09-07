@@ -11,30 +11,48 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * 帖子点赞表
- * @TableName post_thumb
+ * 帖子评论表
+ * @TableName post_comments
  */
-@TableName(value ="post_thumb")
+@TableName(value ="post_comments")
 @Data
-public class PostThumb implements Serializable {
+public class PostComments implements Serializable {
     /**
      * 主键ID
      */
     @TableId(type = IdType.AUTO)
-    @ApiModelProperty(value = "主键ID")
+    @ApiModelProperty(value = "id")
     private Long id;
 
     /**
-     * 点赞用户ID
+     * 评论用户ID
      */
-    @ApiModelProperty(value = "点赞用户ID")
+    @ApiModelProperty(value = "用户id")
     private Long userId;
 
     /**
      * 帖子ID
      */
-    @ApiModelProperty(value = "帖子ID")
+    @ApiModelProperty(value = "帖子id")
     private Long postId;
+
+    /**
+     * 评论内容
+     */
+    @ApiModelProperty(value = "评论内容")
+    private String content;
+
+    /**
+     * 点赞数
+     */
+    @ApiModelProperty(value = "点赞数")
+    private Integer thumbNum;
+
+    /**
+     * 状态 0：正常，1：被举报，2：禁止查看
+     */
+    @ApiModelProperty(value = "状态")
+    private Integer status;
 
     /**
      * 创建时间
@@ -50,4 +68,5 @@ public class PostThumb implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
 }

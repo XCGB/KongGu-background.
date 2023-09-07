@@ -16,13 +16,15 @@ public @interface AuthCheck {
 
     /**
      * 有任何一个角色
-     * @return
+     *
+     * @return int[]
      */
     int[] anyRole() default {};
 
     /**
      * 必须有一个角色
-     * @return
+     *
+     * @return int[]
      */
     int mustRole() default 0;
 }

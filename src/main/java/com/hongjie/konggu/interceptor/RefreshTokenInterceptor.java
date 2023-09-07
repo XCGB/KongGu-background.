@@ -5,7 +5,9 @@ import cn.hutool.core.util.StrUtil;
 import com.hongjie.konggu.constant.RedisConstants;
 import com.hongjie.konggu.model.dto.UserDTO;
 import com.hongjie.konggu.utils.UserHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @createTime: 2023-06-26 16:19
  * @description: token刷新拦截器
  */
+@Slf4j
 public class RefreshTokenInterceptor implements HandlerInterceptor {
     private final StringRedisTemplate stringRedisTemplate;
 
@@ -29,12 +32,14 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 1. 从header中获取token
         String token = request.getHeader("authorization");
+        log.info("token:{}",token);
         if (StrUtil.isBlank(token)){
             return true;
         }
 
         // 2. 从redis中获取用户
         String tokenKey = RedisConstants.LOGIN_USER_KEY + token;
+//        String tokenKey = RedisConstants.LOGIN_USER_KEY + "5df0b3fb-8654-49fa-ba19-c04c7d180fc6";
         Map<Object, Object> cacheUser = stringRedisTemplate.opsForHash().entries(tokenKey);
 
         // 3. 判断用户是否存在

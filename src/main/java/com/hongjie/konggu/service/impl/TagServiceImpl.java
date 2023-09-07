@@ -2,13 +2,11 @@ package com.hongjie.konggu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hongjie.konggu.common.BaseResponse;
 import com.hongjie.konggu.common.ErrorCode;
-import com.hongjie.konggu.common.ResultUtil;
 import com.hongjie.konggu.exception.BusinessException;
-import com.hongjie.konggu.mapper.PostTagMapper;
 import com.hongjie.konggu.mapper.TagMapper;
 import com.hongjie.konggu.model.domain.PostTag;
-import com.hongjie.konggu.model.domain.PostThumb;
 import com.hongjie.konggu.model.domain.Tag;
 import com.hongjie.konggu.service.PostTagService;
 import com.hongjie.konggu.service.TagService;
@@ -26,27 +24,46 @@ import java.util.List;
 */
 @Service
 @Slf4j
-public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
-    implements TagService{
-
+public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagService{
+    /**
+     * 帖子标签关联服务
+     */
     @Resource
     PostTagService postTagService;
+
+    /**
+     * 标签操作接口
+     */
     @Resource
     private TagMapper tagMapper;
 
+    /**
+     * 获取标签列表
+     *
+     * @param tagName 标签名
+     * @return {@link List}<{@link Tag}>
+     */
     @Override
     public List<Tag> getTagList(String tagName) {
         if (tagName == null){
-            // 1.1 返回所有标签
             return list();
         }
         QueryWrapper<Tag> queryWrapper = new QueryWrapper<>();
         queryWrapper.like("tagName", tagName);
 
         List<Tag> tagList = list(queryWrapper);
+        if (tagList == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
         return tagList;
     }
 
+    /**
+     * 删除标签
+     *
+     * @param tagId 标签ID
+     * @return  {@link Boolean}
+     */
     @Override
     public boolean deleteTag(Long tagId) {
         // 1. 校验参数是否合法
@@ -68,6 +85,11 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
         return true;
     }
 
+    /**
+     * 添加标签引用次数
+     *
+     * @param tagId 标签
+     */
     @Override
     public void addPostNum(Long tagId) {
         Tag tag = tagMapper.selectById(tagId);

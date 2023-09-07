@@ -6,19 +6,18 @@ import com.hongjie.konggu.common.ErrorCode;
 import com.hongjie.konggu.common.ResultUtil;
 import com.hongjie.konggu.exception.BusinessException;
 import com.hongjie.konggu.model.domain.Tag;
-import com.hongjie.konggu.model.domain.Users;
 import com.hongjie.konggu.model.dto.UserDTO;
 import com.hongjie.konggu.model.request.ChangeColorRequest;
 import com.hongjie.konggu.model.request.DeleteRequest;
 import com.hongjie.konggu.service.TagService;
-import com.hongjie.konggu.service.UsersService;
 import com.hongjie.konggu.utils.UserHolder;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static com.hongjie.konggu.constant.UserConstant.ADMIN_ROLE;
@@ -28,14 +27,16 @@ import static com.hongjie.konggu.constant.UserConstant.ADMIN_ROLE;
  * @createTime: 2023-06-23 14:21
  * @description: 标签控制层
  */
-@Slf4j
-@RestController
 @RequestMapping("/tag")
+@Api(tags = "标签控制器")
+@RestController
+@Slf4j
 public class TagController {
+    /**
+     * 标签服务
+     */
     @Resource
     private TagService tagService;
-    @Resource
-    private UsersService usersService;
 
 //    // TagMap 缓存
 //    private final Cache<String, Map<String, List<Tag>>> tagMapCache = Caffeine.newBuilder().build();
@@ -45,10 +46,12 @@ public class TagController {
 
     /**
      * 获取所有标签
+     *
      * @param tagName 标签名
-     * @return 标签列表
+     * @return {@link BaseResponse}<{@link List}<{@link Tag}>>
      */
     @GetMapping("/list")
+    @ApiOperation(value = "获取所有标签")
     public BaseResponse<List<Tag>> getTagList(@RequestParam(required = false) String tagName) {
         // 1. 从线程中获取当前用户
         UserDTO user = UserHolder.getUser();
@@ -66,12 +69,12 @@ public class TagController {
      * 创建标签
      *
      * @param tag     标签内容
-     * @param request 请求对象
-     * @return 标签ID
+     * @return {@link BaseResponse}<{@link Long}>
      */
     @PostMapping("/add")
+    @ApiOperation(value = "创建标签")
     @AuthCheck(mustRole = ADMIN_ROLE)
-    public BaseResponse<Long> addTag(@RequestBody Tag tag, HttpServletRequest request) {
+    public BaseResponse<Long> addTag(@RequestBody Tag tag) {
         // 1. 判断请求非空
         if (tag == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -102,9 +105,10 @@ public class TagController {
      * 删除标签
      *
      * @param deleteRequest 删除标签ID
-     * @return 是否成功
+     * @return {@link BaseResponse}<{@link Boolean}>
      */
     @PostMapping("/delete")
+    @ApiOperation(value = "删除标签")
     @AuthCheck(mustRole = ADMIN_ROLE)
     public BaseResponse<Boolean> deleteTag(@RequestBody DeleteRequest deleteRequest) {
         // 1. 判断请求是否合法
@@ -120,8 +124,14 @@ public class TagController {
         return ResultUtil.success(result);
     }
 
-    // 更换颜色
+    /**
+     * 更换颜色
+     *
+     * @param changeColorRequest 切换颜色封装类
+     * @return {@link BaseResponse}<{@link Boolean}>
+     */
     @PostMapping("/changeColor")
+    @ApiOperation(value = "更换颜色")
     @AuthCheck(mustRole = ADMIN_ROLE)
     public BaseResponse<Boolean> changeColor(@RequestBody ChangeColorRequest changeColorRequest){
         if (changeColorRequest == null || changeColorRequest.getTagId() <= 0){
@@ -130,12 +140,11 @@ public class TagController {
         Long tagId = changeColorRequest.getTagId();
         Tag tag = tagService.getById(tagId);
         tag.setTagColor(changeColorRequest.getTagColor());
-        boolean b = tagService.updateById(tag);
-        if (!b){
-            return ResultUtil.error(ErrorCode.INSERT_ERROR);
+        boolean result = tagService.updateById(tag);
+        if (!result){
+            throw new BusinessException(ErrorCode.INSERT_ERROR);
         }
         return ResultUtil.success(true);
-
     }
 
 

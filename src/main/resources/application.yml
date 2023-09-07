@@ -1,5 +1,7 @@
 # encoding: utf-8
 spring:
+  profiles:
+    active: dev
   application:
     name: KongGu
   datasource:
@@ -13,16 +15,23 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   redis:
-    host: 192.168.88.137
     port: 6379
-    password: 123321
-    lettuce:
-      pool:
-        max-active: 10
-        max-idle: 10
-        min-idle: 1
-        max-wait: 1000ms
+    host: localhost
+    database: 1
+#  redis:
+#    host: 192.168.88.137
+#    port: 6379
+#    password: 123321
+#    lettuce:
+#      pool:
+#        max-active: 10
+#        max-idle: 10
+#        min-idle: 1
+#        max-wait: 1000ms
   jackson:
     default-property-inclusion: non_null # JSON处理时忽略非空字段
 
@@ -40,13 +49,3 @@ mybatis-plus:
       logic-delete-field: isDelete # Entity field name for global tombstone
       logic-delete-value: 1 # Logical removed value (default 1)
       logic-not-delete-value: 0 # Logical non-removed values (default 0)
-
-#AliCloudOSS
-aliyun:
-  oss:
-    endpoint: https://oss-cn-beijing.aliyuncs.com
-    accessKeyId: LTAI5tDMUHjG7VDE9okchXDV
-    accessKeySecret: XqPA2aOGajMVV93Ln7La0HGyfs2cOy
-    bucketName: teaching-project-web-tlias
-
-

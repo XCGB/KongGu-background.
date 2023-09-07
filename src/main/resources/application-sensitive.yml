@@ -1,0 +1,7 @@
+# aliOSS
+aliyun:
+  oss:
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    accessKeyId: LTAI5tDMUHjG7VDE9okchXDV
+    accessKeySecret: XqPA2aOGajMVV93Ln7La0HGyfs2cOy
+    bucketName: teaching-project-web-tlias

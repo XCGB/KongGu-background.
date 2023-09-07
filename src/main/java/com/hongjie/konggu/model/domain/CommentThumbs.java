@@ -6,46 +6,39 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * 帖子点赞表
- * @TableName post_thumb
+ * 评论点赞表
+ * @TableName comment_thumbs
  */
-@TableName(value ="post_thumb")
+@TableName(value ="comment_thumbs")
 @Data
-public class PostThumb implements Serializable {
+public class CommentThumbs implements Serializable {
     /**
      * 主键ID
      */
     @TableId(type = IdType.AUTO)
-    @ApiModelProperty(value = "主键ID")
     private Long id;
 
     /**
      * 点赞用户ID
      */
-    @ApiModelProperty(value = "点赞用户ID")
     private Long userId;
 
     /**
-     * 帖子ID
+     * 评论ID
      */
-    @ApiModelProperty(value = "帖子ID")
-    private Long postId;
+    private Long commentId;
 
     /**
      * 创建时间
      */
-    @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @ApiModelProperty(value = "更新时间")
     private Date updateTime;
 
     @TableField(exist = false)
